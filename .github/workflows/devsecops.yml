@@ -11,9 +11,14 @@ jobs:
   security-scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
 
       # 1. SAST con Semgrep
       - name: Semgrep SAST
@@ -51,8 +56,9 @@ jobs:
         run: |
           cd src
           npm install
-          node app.js &
+          nohup node app.js > /tmp/app.log 2>&1 &
           sleep 15
+          curl -s http://localhost:3000 || echo "App no responde"
 
       # 6. DAST con OWASP ZAP
       - name: ZAP Baseline Scan
@@ -73,7 +79,8 @@ jobs:
 
       # 8. Subir reportes como artifact
       - name: Upload reports
-        uses: actions/upload-artifact@v3
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: security-reports
           path: reports/
