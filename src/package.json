@@ -1,0 +1,13 @@
+{
+  "name": "fleetsec-app",
+  "version": "1.0.0",
+  "description": "App vulnerable para pruebas de seguridad",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0"
+  }
+}

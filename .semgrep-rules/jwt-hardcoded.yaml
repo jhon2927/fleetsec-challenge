@@ -1,0 +1,12 @@
+rules:
+  - id: jwt-hardcoded-secret
+    pattern: |
+      jwt.sign($DATA, "$SECRET", $OPTIONS)
+    message: "JWT secret hardcoded - use environment variable instead"
+    severity: ERROR
+    languages:
+      - javascript
+    metadata:
+      category: security
+      technology: jwt
+      owasp: "A02:2021 - Cryptographic Failures"

@@ -1,0 +1,13 @@
+rules:
+  - id: sql-injection-raw-query
+    pattern: |
+      $DB.query("SELECT * FROM " + $TABLE + " WHERE " + $FIELD + " = " + $INPUT)
+    message: "Potential SQL Injection - use parameterized queries"
+    severity: ERROR
+    languages:
+      - javascript
+      - python
+    metadata:
+      category: security
+      technology: sql
+      owasp: "A03:2021 - Injection"
