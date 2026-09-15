@@ -1,0 +1,25 @@
+title: CloudTrail Deletion Attempt - Anti-Forensics
+id: 9b5c4d3e-2f6a-5b8c-0d9e-3a4f5b6c7d8e
+status: stable
+description: Detecta intentos de eliminar trails de CloudTrail. Indicador de anti-forensics. En incidente FleetSec fue BLOQUEADO por SCP a T+01:45.
+references:
+  - https://attack.mitre.org/techniques/T1562/008/
+author: FleetSec Security Team
+date: 2026/09/13
+tags:
+  - attack.defense_evasion
+  - attack.t1562.008
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: cloudtrail.amazonaws.com
+    eventName:
+      - DeleteTrail
+      - StopLogging
+      - UpdateTrail
+  condition: selection
+falsepositives:
+  - Eliminacion legitima de trails obsoletos
+level: critical

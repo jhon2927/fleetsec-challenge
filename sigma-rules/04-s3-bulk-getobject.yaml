@@ -1,0 +1,24 @@
+title: S3 Bulk GetObject - Possible Data Exfiltration
+id: 2d7e6f5a-4b8c-7d0e-2f1a-5c6b7d8e9f0a
+status: experimental
+description: Detecta mas de 100 llamadas GetObject en 5 minutos desde mismo usuario IAM sobre mismo bucket. Coincide con incidente FleetSec (387 GetObject en 8 min, 45.7 GB).
+references:
+  - https://attack.mitre.org/techniques/T1530/
+author: FleetSec Security Team
+date: 2026/09/13
+tags:
+  - attack.exfiltration
+  - attack.t1530
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: s3.amazonaws.com
+    eventName: GetObject
+  timeframe: 5m
+  condition: selection | count() by userIdentity.arn, requestParameters.bucketName > 100
+falsepositives:
+  - Backups legitimos
+  - Procesos ETL batch
+level: critical

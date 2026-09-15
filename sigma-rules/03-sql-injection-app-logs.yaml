@@ -1,0 +1,27 @@
+title: SQL Injection Pattern in Application Logs
+id: 1c6d5e4f-3a7b-6c9d-1e0f-4b5a6c7d8e9f
+status: experimental
+description: Detecta patrones de SQL Injection en logs de aplicacion web.
+references:
+  - https://attack.mitre.org/techniques/T1190/
+  - https://owasp.org/Top10/A03_2021-Injection/
+author: FleetSec Security Team
+date: 2026/09/13
+tags:
+  - attack.initial_access
+  - attack.t1190
+logsource:
+  category: webserver
+  product: generic
+detection:
+  keywords:
+    - "' OR '1'='1"
+    - "' OR 1=1--"
+    - "UNION SELECT"
+    - "'; DROP TABLE"
+    - "1' AND SLEEP("
+    - "admin'--"
+  condition: keywords
+falsepositives:
+  - Consultas legitimas con palabras clave SQL
+level: high
