@@ -122,11 +122,16 @@ Leccion: La IA puede sugerir codigo sintacticamente valido pero inseguro. Es ind
 
 ### Tareas NO delegadas a IA
 
-- Analisis de CVSS scoring (requiere criterio contextual)
-- Decisiones de impacto en Ley 1581 (requiere conocimiento legal)
-- Validacion de PoC funcionales (requiere ejecucion real)
-- Priorizacion de remediacion (requiere contexto de negocio)
-- Interpretacion de resultados de Checkov (requiere criterio)
+No delegaria a IA sin supervision las siguientes tareas:
+
+1. **Analisis de CVSS scoring**: la IA suele sobreestimar vectores sin entender el contexto del activo.
+2. **Decisiones de impacto en Ley 1581**: requiere conocimiento legal colombiano y criterio sobre notificacion a la SIC.
+3. **Validacion de PoC funcionales**: un PoC debe ejecutarse en entorno real; la IA puede generar payloads que no funcionan.
+4. **Priorizacion de remediacion**: depende del contexto de negocio y criticidad del activo.
+5. **Interpretacion de resultados de Checkov**: los FAIL deben evaluarse caso por caso; algunos son falsos positivos.
+6. **Respuesta a incidentes en vivo**: las decisiones de contencion tienen impacto legal y operativo que requiere criterio humano.
+
+La IA es una herramienta de apoyo, no un reemplazo del criterio profesional.
 
 ## Desafios y Proximos Pasos
 
@@ -167,3 +172,47 @@ Enlace al video: YouTube - No listado (PENDIENTE)
 ## Licencia
 
 Este proyecto es parte de una prueba tecnica.
+
+### Diagrama de Arquitectura
+
+    ┌─────────────────────────────────────────────────────────────┐
+    │                       INTERNET                               │
+    └──────────────────────────┬──────────────────────────────────┘
+                               │
+                ┌──────────────┴──────────────┐
+                │      WAF v2 (CloudFront)    │
+                │  - SQLi Rule Set (BLOCK)    │
+                │  - Known Bad Inputs (BLOCK) │
+                │  - Rate limiting 1000/5min  │
+                └──────────────┬──────────────┘
+                               │
+                ┌──────────────┴──────────────┐
+                │    ALB (Public Subnets)     │
+                │    - SG: 80/443 from 0.0.0.0│
+                └──────────────┬──────────────┘
+                               │
+        ┌──────────────────────┴──────────────────────┐
+        │                                             │
+   ┌────┴─────┐                                 ┌─────┴─────┐
+   │  ECS     │                                 │  ECS      │
+   │  Task A  │                                 │  Task B   │
+   │ (App     │                                 │ (App      │
+   │ Subnet)  │                                 │ Subnet)   │
+   └────┬─────┘                                 └─────┬─────┘
+        │                                             │
+        └──────────────────┬──────────────────────────┘
+                           │
+                  ┌────────┴────────┐
+                  │   RDS (Multi-AZ)│
+                  │   - Cifrado KMS │
+                  │   - Sin público │
+                  │   - Backup 7d   │
+                  └─────────────────┘
+
+    Monitoreo:
+    - CloudTrail (multi-región + log validation)
+    - GuardDuty (S3 Protection + Malware)
+    - Security Hub (FSBP + CIS v1.4)
+    - VPC Flow Logs → S3
+    - KMS CMK con rotación anual
+    - Secrets Manager con rotación 30d
