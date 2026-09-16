@@ -1,0 +1,59 @@
+
+services:
+  # Aplicacion vulnerable (demo)
+  vulnerable-app:
+    build: ./src
+    container_name: fleetsec-vulnerable-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=postgres
+      - DB_USER=admin
+      - DB_PASSWORD=admin123
+      - DB_NAME=fleetsec
+      - JWT_SECRET=dev-secret-change-in-prod
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - fleetsec-net
+    restart: unless-stopped
+
+  # Base de datos PostgreSQL
+  postgres:
+    image: postgres:14-alpine
+    container_name: fleetsec-postgres
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin123
+      - POSTGRES_DB=fleetsec
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d fleetsec"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fleetsec-net
+
+  # OWASP Juice Shop (app vulnerable conocida)
+  juice-shop:
+    image: bkimminich/juice-shop:v15.1.0
+    container_name: fleetsec-juice-shop
+    ports:
+      - "3001:3000"
+    networks:
+      - fleetsec-net
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+    driver: local
+
+networks:
+  fleetsec-net:
+    driver: bridge

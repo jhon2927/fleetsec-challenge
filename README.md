@@ -216,3 +216,32 @@ Este proyecto es parte de una prueba tecnica.
     - VPC Flow Logs → S3
     - KMS CMK con rotación anual
     - Secrets Manager con rotación 30d
+
+## Bonus Implementados
+
+### Bonus 1: docker-compose funcional (+5%)
+
+Un comando levanta el entorno completo:
+
+    docker compose up -d
+
+Servicios:
+- App vulnerable (puerto 3000)
+- OWASP Juice Shop (puerto 3001)
+- PostgreSQL (puerto 5432)
+
+Detener:
+
+    docker compose down
+
+### Bonus 2: Hallazgos adicionales (+5%)
+
+5 vulnerabilidades extra mas alla de los 10 tipos base:
+
+- V-11: HTTP Parameter Pollution (CWE-235)
+- V-12: Missing Rate Limiting (CWE-770)
+- V-13: Insecure Deserialization (CWE-502)
+- V-14: Missing Security Headers (CWE-693)
+- V-15: Information Disclosure via Errors (CWE-209)
+
+Ver: docs/vapt/02-hallazgos-adicionales.md
